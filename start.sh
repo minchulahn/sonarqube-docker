@@ -1,15 +1,18 @@
 #!/bin/bash
 
+mysql_install_db --user mysql > /dev/null
+
 cat > /opt/sonar/bin/linux-x86-64/createdb.sql <<EOF
-    CREATE DATABASE sonar;
-    USE mysql;
-    GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' WITH GRANT OPTION;
-    UPDATE user SET password=PASSWORD("root") WHERE user='root';
-    FLUSH PRIVILEGES;
+CREATE DATABASE sonar;
+FLUSH PRIVILEGES;
+
+CREATE USER 'sonar' IDENTIFIED BY 'sonar';
+GRANT ALL ON sonar.* TO 'sonar'@'%' IDENTIFIED BY 'sonar';
+GRANT ALL ON sonar.* TO 'sonar'@'localhost' IDENTIFIED BY 'sonar';
 EOF
 
-mysql_install_db --user mysql > /dev/null
 mysqld --bootstrap --verbose=0 < /opt/sonar/bin/linux-x86-64/createdb.sql
+
 mysqld_safe --user=mysql &
 
 if [ ! -d "/opt/sonar/extensions/plugins" ]; then

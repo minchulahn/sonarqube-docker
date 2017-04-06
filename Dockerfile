@@ -9,12 +9,15 @@ RUN cd /tmp && curl -L -O https://sonarsource.bintray.com/Distribution/sonarqube
 
 # Update SonarQube configuration
 #RUN sed -i 's|#wrapper.java.additional.7=-server|wrapper.java.additional.7=-server|g' /opt/sonar/conf/wrapper.conf
-RUN sed -i 's|#sonar.jdbc.username=sonar|sonar.jdbc.username=root|g' /opt/sonar/conf/sonar.properties
-RUN sed -i 's|#sonar.jdbc.password=sonar|sonar.jdbc.password=root|g' /opt/sonar/conf/sonar.properties
+RUN sed -i 's|#sonar.jdbc.username=sonar|sonar.jdbc.username=sonar|g' /opt/sonar/conf/sonar.properties
+RUN sed -i 's|#sonar.jdbc.password=sonar|sonar.jdbc.password=sonar|g' /opt/sonar/conf/sonar.properties
 #RUN sed -i 's|sonar.jdbc.url=jdbc:h2|#sonar.jdbc.url=jdbc:h2|g' /opt/sonar/conf/sonar.properties
 RUN sed -i 's|#sonar.jdbc.url=jdbc:mysql://localhost:3306/sonar|sonar.jdbc.url=jdbc:mysql://localhost:3306/sonar|g' /opt/sonar/conf/sonar.properties
 # Set context path
 RUN sed -i 's/#sonar.web.context=/sonar.web.context=\/sonarqube/g' /opt/sonar/conf/sonar.properties
+
+RUN sed -i 's/127.0.0.1/0.0.0.0/g' /etc/mysql/my.cnf
+RUN sed -i 's/key_buffer/key_buffer_size/g' /etc/mysql/my.cnf
 
 RUN mkdir -p /tmp/sonar
 RUN cp -rf /opt/sonar/extensions /tmp/sonar/
@@ -24,7 +27,6 @@ RUN chmod 777 /opt/sonar/bin/linux-x86-64/start.sh
 
 EXPOSE 9000 3306
 
-VOLUME ["/opt/sonar/extensions", "/opt/sonar/conf"]
-VOLUME ["/etc/mysql", "/var/lib/mysql"]
+VOLUME ["/opt/sonar/extensions", "/opt/sonar/conf", "/var/lib/mysql"]
 
 CMD ["/opt/sonar/bin/linux-x86-64/start.sh"]
