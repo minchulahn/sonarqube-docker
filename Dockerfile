@@ -22,9 +22,9 @@ RUN cp -rf /opt/sonar/conf /tmp/sonar/
 ADD start.sh /opt/sonar/bin/linux-x86-64/start.sh
 RUN chmod 777 /opt/sonar/bin/linux-x86-64/start.sh
 
-EXPOSE 9000
+EXPOSE 9000 3306
 
 VOLUME ["/opt/sonar/extensions", "/opt/sonar/conf"]
-VOLUME ["/var/lib/mysql"]
+VOLUME ["/etc/mysql", "/var/lib/mysql"]
 
 CMD ["/opt/sonar/bin/linux-x86-64/start.sh"]
